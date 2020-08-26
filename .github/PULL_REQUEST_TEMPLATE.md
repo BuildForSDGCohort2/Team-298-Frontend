@@ -13,9 +13,10 @@
 ##### * php artisan optimize
 ##### * php artisan serve --host=0.0.0.0
 ##### * npm run watch
-- access the route ` ` with ` ` method
-#### What are the relevant pivotal tracker stories?
 
-[#story link](https://github.com/BuildForSDGCohort2/Team-298-Fullstack/projects/1#[])
+
+#### What are the relevant card link?
+
+[#story link](link)
 
 #### Screenshots (if appropriate)
