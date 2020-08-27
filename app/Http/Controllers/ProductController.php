@@ -27,7 +27,6 @@ class ProductController extends Controller
             'discount'              => ['min:0.01'],
             'sku'                   => ['min:3'],
             'collection_id'         => ['nullable'],
-            'user_id'               => ['integer'],
             'description'           => ['min:10'],
             'category_id'           => ['integer'],
             'status'                => ['min:0.01'],
@@ -54,6 +53,19 @@ class ProductController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function storeItems()
+    {
+        return response()->json([
+            'status' => 200,
+            'data' => new ProductCollection(Product::all())
+        ]);
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -63,6 +75,7 @@ class ProductController extends Controller
     {
         $this->validator($request->all())->validate();
         $request['slug'] = Str::slug($request['title']);
+        $request['user_id'] = auth('api')->user()->id;
         $product = Product::create($request->all());
         if ($request->hasfile('files')) {
             foreach ($request->file('files') as $file) {

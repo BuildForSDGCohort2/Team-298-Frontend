@@ -13,25 +13,30 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::group(['prefix' => 'v1'], function () {
-    Route::get('/products', 'ProductController@index');
-    Route::get('/products/{product}', 'ProductController@show');
-    Route::group(['middleware' => 'auth:api'], function () {
-        Route::post('/products', 'ProductController@store');
-        Route::patch('/products/{product}', 'ProductController@update');
-        Route::delete('/products/{product}', 'ProductController@destroy');
-    });
-});
+
 
 Route::group([
-    'prefix' => 'v1/auth'
+    'prefix' => 'v1'
 ], function () {
-    Route::post('login', 'AuthController@login');
-    Route::post('register', 'AuthController@signup');
+    Route::post('auth/login', 'AuthController@login');
+    Route::post('auth/register', 'AuthController@signup');
+    Route::get('/products', 'ProductController@index');
+    Route::get('/products/{product}', 'ProductController@show');
+    Route::get('/stores', 'StoreController@index');
+    Route::get('/stores/{store}', 'StoreController@show');
+    Route::get('/stores/{store}/', 'StoreController@show');
+    Route::get('stores/{store}/products', 'StoreController@products');
+    Route::get('stores/{store}/products/{product}', 'StoreController@productShow');
     Route::group([
         'middleware' => 'auth:api'
     ], function () {
-        Route::get('logout', 'AuthController@logout');
-        Route::get('user', 'AuthController@user');
+        Route::get('auth/logout', 'AuthController@logout');
+        Route::get('auth/user', 'AuthController@user');
+        Route::post('/products', 'ProductController@store');
+        Route::patch('/products/{product}', 'ProductController@update');
+        Route::delete('/products/{product}', 'ProductController@destroy');
+        Route::post('/stores', 'StoreController@store');
+        Route::patch('/stores/{store}', 'StoreController@update');
+        Route::delete('/stores/{store}', 'StoreController@destroy');
     });
 });
