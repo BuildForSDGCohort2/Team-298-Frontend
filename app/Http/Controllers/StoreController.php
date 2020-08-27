@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use App\Http\Resources\CategoryResourceCollection;
-use App\Http\Resources\ProductCollection;
+use App\Http\Resources\ProductResourceCollection;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\StoreResource;
 use App\Http\Resources\StoreResourceCollection;
@@ -14,6 +14,7 @@ use App\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use PhpParser\Node\Stmt\TryCatch;
 
 class StoreController extends Controller
 {
@@ -56,11 +57,16 @@ class StoreController extends Controller
      */
     public function store(Request $request)
     {
+
         $this->validator($request->all())->validate();
         $request['user_id'] = auth('api')->user()->id;
         $request['slug'] = Str::slug($request['name']);
         $store = Store::create($request->all());
-        return new StoreResource($store);
+        return response()->json([
+            'status' => 201,
+            'message' => 'store created successfully',
+            'data' => new StoreResource($store)
+        ]);
     }
 
     /**
@@ -69,14 +75,32 @@ class StoreController extends Controller
      * @param  \App\Store  $store
      * @return \Illuminate\Http\Response
      */
-    public function products(Request $request, Store $store)
+    public function products(Store $store)
     {
-        return new ProductCollection(Product::where('user_id', $store['user_id'])->get());
+        return response()->json([
+            'status' => 200,
+            'data' => new ProductResourceCollection($store->products)
+        ]);
     }
 
-    public function productShow(Request $request, Store $store)
+    public function productShow(Request $request, Store $store, Product $product)
     {
-        return new ProductCollection(Product::where('user_id', $store['user_id'])->get());
+        foreach ($store->products as $value) {
+            if ($value['id'] == $product['id']) {
+                $request['store_product'] = $product;
+            }
+        }
+        if ($request['store_product']) {
+            return response()->json([
+                'status' => 200,
+                'data' => new ProductResource($product)
+            ]);
+        } else {
+            return response()->json([
+                'status'    => 404,
+                'data'      => 'product not found in store'
+            ]);
+        }
     }
 
     /**
@@ -88,7 +112,10 @@ class StoreController extends Controller
     public function show(Store $store)
     {
 
-        return new StoreResource($store);
+        return response()->json([
+            'status' => 200,
+            'data' => new StoreResource($store)
+        ]);
     }
 
     /**
@@ -101,7 +128,11 @@ class StoreController extends Controller
     public function update(Request $request, Store $store)
     {
         $store->update($request->all());
-        return new StoreResource($store);
+        return response()->json([
+            'status' => 200,
+            'message' => 'store updated successfully',
+            'data' => new StoreResource($store)
+        ]);
     }
 
     /**

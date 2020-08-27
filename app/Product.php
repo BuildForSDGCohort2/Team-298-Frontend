@@ -14,7 +14,7 @@ class Product extends Model
      *
      * @var array
      */
-    protected $fillable = ['title', 'slug', 'price', 'discount', 'discount_type', 'sku', 'collection_id', 'user_id', 'description', 'category_id', 'status', 'seo_title', 'seo_description', 'social_title', 'social_description', 'sizes', 'materials', 'colors'];
+    protected $fillable = ['title', 'slug', 'price', 'discount', 'discount_type', 'sku', 'collection_id', 'store_id', 'description', 'category_id', 'status', 'seo_title', 'seo_description', 'social_title', 'social_description', 'sizes', 'materials', 'colors'];
 
     // default route key
     public function getRouteKeyName()
@@ -25,5 +25,9 @@ class Product extends Model
     public function files()
     {
         return $this->hasMany(StoreFiles::class);
+    }
+    public function store()
+    {
+        return $this->belongsTo(Store::class);
     }
 }

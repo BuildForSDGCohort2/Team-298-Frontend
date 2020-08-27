@@ -1,5 +1,7 @@
 <?php
 
+use App\Product;
+use App\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +29,10 @@ Route::group([
     Route::get('/stores/{store}/', 'StoreController@show');
     Route::get('stores/{store}/products', 'StoreController@products');
     Route::get('stores/{store}/products/{product}', 'StoreController@productShow');
+    Route::get('stores/{store}/products/{product}',[
+        'uses'=>'StoreController@productShow',
+        'as'=>'delete-warden'
+    ]);
     Route::group([
         'middleware' => 'auth:api'
     ], function () {

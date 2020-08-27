@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ProductCollection;
+use App\Http\Resources\ProductResourceCollection;
 use App\Http\Resources\ProductResource;
 use Illuminate\Support\Str;
 use App\Product;
@@ -48,7 +48,7 @@ class ProductController extends Controller
     {
         return response()->json([
             'status' => 200,
-            'data' => new ProductCollection(Product::all())
+            'data' => new ProductResourceCollection(Product::all())
         ]);
     }
 
@@ -61,7 +61,7 @@ class ProductController extends Controller
     {
         return response()->json([
             'status' => 200,
-            'data' => new ProductCollection(Product::all())
+            'data' => new ProductResourceCollection(Product::all())
         ]);
     }
 
@@ -75,7 +75,6 @@ class ProductController extends Controller
     {
         $this->validator($request->all())->validate();
         $request['slug'] = Str::slug($request['title']);
-        $request['user_id'] = auth('api')->user()->id;
         $product = Product::create($request->all());
         if ($request->hasfile('files')) {
             foreach ($request->file('files') as $file) {
@@ -91,7 +90,7 @@ class ProductController extends Controller
         return response()->json([
             'status' => 201,
             'message' => 'product created successfully',
-            'data' => new Product($product)
+            'data' => new ProductResource($product)
         ]);
     }
 
@@ -120,14 +119,16 @@ class ProductController extends Controller
     {
         $request['slug'] = Str::slug($request['title']);
         $product->update($request->all());
-        foreach ($request->file('files') as $file) {
-            $path = $file->store('products');
-            StoreFiles::create([
-                'path'          => $path,
-                'type'          => $file->extension(),
-                'size'          => $file->getSize(),
-                'product_id'    => $product->id
-            ]);
+        if ($request->file('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('products');
+                StoreFiles::create([
+                    'path'          => $path,
+                    'type'          => $file->extension(),
+                    'size'          => $file->getSize(),
+                    'product_id'    => $product->id
+                ]);
+            }
         }
         return response()->json([
             'status' => 201,

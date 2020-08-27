@@ -32,8 +32,6 @@ class CreateProductsTable extends Migration
             $table->jsonb('sizes')->nullable();
             $table->jsonb('materials')->nullable();
             $table->jsonb('colors')->nullable();
-            $table->bigInteger('user_id')->unsigned()->index()->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
